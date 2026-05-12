@@ -14,8 +14,8 @@ services:
         restart: unless-stopped
         container_name: aslams-erp
         networks:
-            - aslams-erp-network
+            - app-network
 
 networks:
-    aslams-erp-network:
+    app-network:
         external: true
