@@ -42,11 +42,11 @@ jobs:
                       apt-get update && apt-get install -y unzip
 
                       echo "Unzipping release..."
-                      rm -rf release-erp
-                      mkdir release-erp
-                      unzip -o aslams.zip -d release-erp
+                      rm -rf release-aslams-erp
+                      mkdir release-aslams-erp
+                      unzip -o aslams.zip -d release-aslams-erp
 
-                      cd release-erp
+                      cd release-aslams-erp
 
                       echo "Starting containers..."
                       docker compose down

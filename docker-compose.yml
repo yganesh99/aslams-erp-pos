@@ -6,7 +6,7 @@ services:
                 NEXT_PUBLIC_API_URL: http://139.59.92.69:4000/api
                 NEXT_PUBLIC_BETTER_AUTH_URL: http://139.59.92.69:3000
         ports:
-            - '3000:3000'
+            - '3005:3000'
         env_file:
             - /opt/aslams-erp/.env
         environment:
@@ -14,8 +14,8 @@ services:
         restart: unless-stopped
         container_name: aslams-erp
         networks:
-            - app-network
+            - aslams-erp-network
 
 networks:
-    app-network:
+    aslams-erp-network:
         external: true
