@@ -28,11 +28,6 @@ export default function SettingsPage() {
 	const [isTaxLoading, setIsTaxLoading] = useState(true);
 	const [isTaxSaving, setIsTaxSaving] = useState(false);
 
-	const [ecomShipping, setEcomShipping] = useState<number>(0);
-	const [ecomShippingInput, setEcomShippingInput] = useState<string>('0');
-	const [isEcomShipLoading, setIsEcomShipLoading] = useState(true);
-	const [isEcomShipSaving, setIsEcomShipSaving] = useState(false);
-
 	const [company, setCompany] = useState<CompanyDetails>(emptyCompany);
 	const [isCompanyLoading, setIsCompanyLoading] = useState(true);
 	const [isCompanySaving, setIsCompanySaving] = useState(false);
@@ -41,20 +36,13 @@ export default function SettingsPage() {
 		try {
 			setIsTaxLoading(true);
 			setIsCompanyLoading(true);
-			setIsEcomShipLoading(true);
-			const [taxRes, companyRes, shipRes] = await Promise.all([
+			const [taxRes, companyRes] = await Promise.all([
 				api.get<{ taxRate: number }>('/settings/tax-rate'),
 				api.get<CompanyDetails>('/settings/company-details'),
-				api.get<{ shippingCost: number }>(
-					'/settings/ecommerce-shipping-cost',
-				),
 			]);
 			const rate = taxRes.data?.taxRate ?? 0;
 			setTaxRate(rate);
 			setTaxRateInput(String(rate));
-			const ship = shipRes.data?.shippingCost ?? 0;
-			setEcomShipping(ship);
-			setEcomShippingInput(String(ship));
 			setCompany({
 				companyName: companyRes.data.companyName ?? '',
 				registrationNumber: companyRes.data.registrationNumber ?? '',
@@ -67,7 +55,6 @@ export default function SettingsPage() {
 		} finally {
 			setIsTaxLoading(false);
 			setIsCompanyLoading(false);
-			setIsEcomShipLoading(false);
 		}
 	};
 
@@ -86,28 +73,6 @@ export default function SettingsPage() {
 			toast.error('Failed to save company details.');
 		} finally {
 			setIsCompanySaving(false);
-		}
-	};
-
-	const handleSaveEcomShipping = async (e: React.FormEvent) => {
-		e.preventDefault();
-		const value = parseFloat(ecomShippingInput);
-		if (!Number.isFinite(value) || value < 0) {
-			toast.error('Please enter a valid shipping amount (0 or greater).');
-			return;
-		}
-		try {
-			setIsEcomShipSaving(true);
-			await api.put('/settings/ecommerce-shipping-cost', {
-				shippingCost: value,
-			});
-			setEcomShipping(value);
-			toast.success('E-commerce shipping saved. New checkouts will use this amount.');
-		} catch (error) {
-			console.error('Failed to save ecommerce shipping:', error);
-			toast.error('Failed to save ecommerce shipping.');
-		} finally {
-			setIsEcomShipSaving(false);
 		}
 	};
 
@@ -242,7 +207,7 @@ export default function SettingsPage() {
 					<CardTitle>Tax Rate</CardTitle>
 					<p className='text-sm text-zinc-500 mt-1'>
 						One tax rate for the whole system. It is applied to all
-						POS and ecommerce orders when they are placed.
+						new orders.
 					</p>
 				</CardHeader>
 				<CardContent>
@@ -283,61 +248,6 @@ export default function SettingsPage() {
 							{taxRate > 0 && (
 								<span className='text-sm text-zinc-500'>
 									Current: {taxRate}%
-								</span>
-							)}
-						</form>
-					)}
-				</CardContent>
-			</Card>
-
-			<Card>
-				<CardHeader>
-					<CardTitle>E-commerce shipping</CardTitle>
-					<p className='text-sm text-zinc-500 mt-1'>
-						Flat delivery charge added to each new web order (before
-						payment). POS orders are unchanged.
-					</p>
-				</CardHeader>
-				<CardContent>
-					{isEcomShipLoading ? (
-						<p className='text-center text-zinc-500 py-8'>
-							Loading...
-						</p>
-					) : (
-						<form
-							onSubmit={handleSaveEcomShipping}
-							className='flex flex-wrap items-end gap-4'
-						>
-							<div className='space-y-2 min-w-[180px]'>
-								<label className='text-sm font-medium'>
-									Shipping charge (same currency as orders)
-								</label>
-								<Input
-									type='number'
-									min={0}
-									step={0.01}
-									value={ecomShippingInput}
-									onChange={(e) =>
-										setEcomShippingInput(e.target.value)
-									}
-									placeholder='0'
-								/>
-							</div>
-							<Button
-								type='submit'
-								disabled={isEcomShipSaving}
-								className='flex items-center space-x-2'
-							>
-								<Save className='w-4 h-4' />
-								<span>
-									{isEcomShipSaving
-										? 'Saving...'
-										: 'Save shipping'}
-								</span>
-							</Button>
-							{ecomShipping > 0 && (
-								<span className='text-sm text-zinc-500'>
-									Current: රු{ecomShipping.toFixed(2)}
 								</span>
 							)}
 						</form>
