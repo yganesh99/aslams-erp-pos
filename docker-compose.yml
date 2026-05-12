@@ -3,8 +3,8 @@ services:
         build:
             context: .
             args:
-                NEXT_PUBLIC_API_URL: http://139.59.92.69:4000/api
-                NEXT_PUBLIC_BETTER_AUTH_URL: http://139.59.92.69:3000
+                NEXT_PUBLIC_API_URL: http://139.59.92.69:4001/api
+                NEXT_PUBLIC_BETTER_AUTH_URL: http://139.59.92.69:3005
         ports:
             - '3005:3000'
         env_file:
