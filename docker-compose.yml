@@ -1,0 +1,21 @@
+services:
+    ecommerce:
+        build:
+            context: .
+            args:
+                NEXT_PUBLIC_API_URL: http://139.59.92.69:4000/api
+                NEXT_PUBLIC_BETTER_AUTH_URL: http://139.59.92.69:3000
+        ports:
+            - '3000:3000'
+        env_file:
+            - /opt/aslams-erp/.env
+        environment:
+            - NODE_ENV=production
+        restart: unless-stopped
+        container_name: aslams-erp
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        external: true
